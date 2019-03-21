@@ -53,8 +53,8 @@ public:
 	{
 		int index = note % 12;
 		int octave = (note / 12);
-		std::vector<std::string> code { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-		std::vector<std::string> o { "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8" };
+		static std::vector<std::string> code{ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+		static std::vector<std::string> o{ "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8" };
 		return code[index] + o[octave];
 	}
 };
