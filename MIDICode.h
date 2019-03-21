@@ -44,7 +44,7 @@ public:
 		return MIDI::_min(MIDI::_max(-2, octave), 8);
 	}
 
-	static int shift(int note, int octave)
+	static int shift_octave(int note, int octave)
 	{
 		return MIDI::safe_note(note + (MIDI::safe_octave(octave) * 12));
 	}
