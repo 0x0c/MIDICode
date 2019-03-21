@@ -21,7 +21,7 @@ private:
 public:
 	enum Note : int
 	{
-		C = 60,
+		C,
 		CSharp,
 		D,
 		DSharp,
@@ -51,11 +51,11 @@ public:
 
 	static std::string to_string(int note)
 	{
-		int index = note % 12;
-		int octave = (note / 12);
-		static std::vector<std::string> code{ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-		static std::vector<std::string> o{ "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8" };
-		return code[index] + o[octave];
+		int c = note % 12;
+		int o = (note / 12);
+		static std::vector<std::string> code { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+		static std::vector<std::string> octave { "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8" };
+		return code[c] + octave[o];
 	}
 };
 }
