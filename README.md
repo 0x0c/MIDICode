@@ -24,4 +24,8 @@ auto number = note.rawValue();
 
 ## Note
 
-This library is using midi note number from Yamaha style, so the minimum octave is -2.
+You can use midi note as an international style like this
+
+```
+auto note = MIDI::InternationalNote(MIDI::Code::C, -2); // Note number = 0, Octave = -2
+```
