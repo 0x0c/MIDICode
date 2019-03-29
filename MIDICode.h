@@ -1,27 +1,16 @@
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 namespace m2d
 {
-class MIDI
+namespace MIDI
 {
-private:
-	static int _min(int a, int b)
+	enum Code : int
 	{
-		return a < b ? a : b;
-	}
-
-	static int _max(int a, int b)
-	{
-		return a > b ? a : b;
-	}
-
-public:
-	enum Note : int
-	{
-		C,
+		C = 0,
 		CSharp,
 		D,
 		DSharp,
@@ -34,28 +23,163 @@ public:
 		ASharp,
 		B
 	};
-	static int safe_note(int note)
-	{
-		return MIDI::_min(MIDI::_max(0, note), 127);
-	}
 
-	static int safe_octave(int octave)
+	template <class T>
+	class Note
 	{
-		return MIDI::_min(MIDI::_max(-2, octave), 8);
-	}
+		T _note;
 
-	static int shift_octave(int note, int octave)
-	{
-		return MIDI::safe_note(note + (MIDI::safe_octave(octave) * 12));
-	}
+	public:
+		Note(int code, int octave)
+		{
+			_note = T(code, octave);
+		}
 
-	static std::string to_string(int note)
+		int code()
+		{
+			return _note.code();
+		}
+
+		int octave()
+		{
+			return _note.octave();
+		}
+
+		int rawValue()
+		{
+			return _note.rawValue();
+		}
+
+		static int safe_octave(int octave)
+		{
+			return T::safe_octave(octave);
+		}
+	};
+
+	class NoteImpl
 	{
-		int c = note % 12;
-		int o = (note / 12);
-		static std::vector<std::string> code { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-		static std::vector<std::string> octave { "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8" };
-		return code[c] + octave[o];
-	}
+	protected:
+		int _code = 0;
+		int _octave = 0;
+
+	public:
+		NoteImpl()
+		    : _code(0)
+		    , _octave(0)
+		{
+		}
+
+		NoteImpl(int code, int octave)
+		    : _code(code)
+		    , _octave(octave)
+		{
+		}
+
+		virtual std::string to_string(bool append_style) = 0;
+
+		static int safe_note(int note)
+		{
+			return std::min(std::max(0, note), 127);
+		}
+
+		int code()
+		{
+			return _code;
+		}
+
+		int octave()
+		{
+			return _octave;
+		}
+
+		virtual int rawValue() = 0;
+	};
+
+	class International : public NoteImpl
+	{
+	public:
+		International()
+		    : NoteImpl(0, 0)
+		{
+		}
+
+		International(int code, int octave)
+		    : NoteImpl(code, octave)
+		{
+		}
+
+		static int safe_octave(int octave)
+		{
+			return std::min(std::max(-1, octave), 9);
+		}
+
+		int shift_octave(int octave)
+		{
+			return NoteImpl::safe_note(_code + (International::safe_octave(octave) * 12));
+		}
+
+		static int note(int base_code, int octave)
+		{
+			auto c0 = 12;
+			return NoteImpl::safe_note(base_code + (International::safe_octave(octave) * 12) + c0);
+		}
+
+		std::string to_string(bool append_style)
+		{
+			static std::vector<std::string> code_string { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+			static std::vector<std::string> octave_string { "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+			return code_string[_code] + octave_string[_octave];
+		}
+
+		int rawValue()
+		{
+			return NoteImpl::safe_note(_code + (International::safe_octave(_octave) * 12));
+		}
+	};
+
+	class Yamaha : public NoteImpl
+	{
+	public:
+		Yamaha()
+		    : NoteImpl(0, 0)
+		{
+		}
+
+		Yamaha(int code, int octave)
+		    : NoteImpl(code, octave)
+		{
+		}
+
+		static int safe_octave(int octave)
+		{
+			return std::min(std::max(-2, octave), 8);
+		}
+
+		int shift_octave(int octave)
+		{
+			return NoteImpl::safe_note(_code + (Yamaha::safe_octave(octave) * 12));
+		}
+
+		static int note(int base_code, int octave)
+		{
+			auto c0 = 24;
+			return NoteImpl::safe_note(base_code + (Yamaha::safe_octave(octave) * 12) + c0);
+		}
+
+		std::string to_string(bool append_style)
+		{
+			static std::vector<std::string> code_string { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+			static std::vector<std::string> octave_string { "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8" };
+			return code_string[_code] + octave_string[_octave];
+		}
+
+		int rawValue()
+		{
+			return NoteImpl::safe_note(_code + (Yamaha::safe_octave(_octave) * 12));
+		}
+	};
+
+	using InternationalNote = Note<International>;
+	using YamahaNote = Note<Yamaha>;
 };
 }
