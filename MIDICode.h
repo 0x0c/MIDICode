@@ -45,6 +45,11 @@ namespace MIDI
 			return _note.octave();
 		}
 
+		int change_octave(int to)
+		{
+			return _note.octave = to;
+		}
+
 		int rawValue()
 		{
 			return _note.rawValue();
@@ -113,17 +118,6 @@ namespace MIDI
 			return std::min(std::max(-1, octave), 9);
 		}
 
-		int shift_octave(int octave)
-		{
-			return NoteImpl::safe_note(_code + (International::safe_octave(octave) * 12));
-		}
-
-		static int note(int base_code, int octave)
-		{
-			auto c0 = 12;
-			return NoteImpl::safe_note(base_code + (International::safe_octave(octave) * 12) + c0);
-		}
-
 		std::string to_string(bool append_style)
 		{
 			static std::vector<std::string> code_string { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
@@ -133,7 +127,8 @@ namespace MIDI
 
 		int rawValue()
 		{
-			return NoteImpl::safe_note(_code + (International::safe_octave(_octave) * 12));
+			auto c0 = 12;
+			return NoteImpl::safe_note(_code + (International::safe_octave(_octave) * 12) + c0);
 		}
 	};
 
@@ -155,17 +150,6 @@ namespace MIDI
 			return std::min(std::max(-2, octave), 8);
 		}
 
-		int shift_octave(int octave)
-		{
-			return NoteImpl::safe_note(_code + (Yamaha::safe_octave(octave) * 12));
-		}
-
-		static int note(int base_code, int octave)
-		{
-			auto c0 = 24;
-			return NoteImpl::safe_note(base_code + (Yamaha::safe_octave(octave) * 12) + c0);
-		}
-
 		std::string to_string(bool append_style)
 		{
 			static std::vector<std::string> code_string { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
@@ -175,7 +159,8 @@ namespace MIDI
 
 		int rawValue()
 		{
-			return NoteImpl::safe_note(_code + (Yamaha::safe_octave(_octave) * 12));
+			auto c0 = 24;
+			return NoteImpl::safe_note(_code + (Yamaha::safe_octave(_octave) * 12) + c0);
 		}
 	};
 

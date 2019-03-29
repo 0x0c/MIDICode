@@ -11,10 +11,14 @@ A utility library to use MIDI note easily.
 using namespace m2d;
 
 // Refer midi note like this
-auto c = MIDICode::Note::C; // Note number = 0, Octave = -2
+
+auto note = MIDI::YamahaNote(MIDI::Code::C, -2); // Note number = 0, Octave = -2
 
 // Change octave
-auto c0 = MIDICode::shift_octave(c, 3); // Note number = 24, Octave = 0
+note.change_octave(0); // Note number = 24, Octave = 0
+
+// Get note number
+auto number = note.rawValue();
 
 ```
 
