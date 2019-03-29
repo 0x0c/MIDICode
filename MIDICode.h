@@ -55,6 +55,11 @@ namespace MIDI
 			return _note.rawValue();
 		}
 
+		std::string to_string(bool print_type = false)
+		{
+			return _note.to_string();
+		}
+
 		static int safe_octave(int octave)
 		{
 			return T::safe_octave(octave);
@@ -80,7 +85,7 @@ namespace MIDI
 		{
 		}
 
-		virtual std::string to_string(bool append_style) = 0;
+		virtual std::string to_string(bool print_type) = 0;
 
 		static int safe_note(int note)
 		{
@@ -118,11 +123,11 @@ namespace MIDI
 			return std::min(std::max(-1, octave), 9);
 		}
 
-		std::string to_string(bool append_style)
+		std::string to_string(bool print_type)
 		{
 			static std::vector<std::string> code_string { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 			static std::vector<std::string> octave_string { "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-			return code_string[_code] + octave_string[_octave];
+			return (print_type == true ? "International " : "") + code_string[_code] + octave_string[_octave];
 		}
 
 		int rawValue()
@@ -150,11 +155,11 @@ namespace MIDI
 			return std::min(std::max(-2, octave), 8);
 		}
 
-		std::string to_string(bool append_style)
+		std::string to_string(bool print_type)
 		{
 			static std::vector<std::string> code_string { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 			static std::vector<std::string> octave_string { "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8" };
-			return code_string[_code] + octave_string[_octave];
+			return (print_type == true ? "Yamaha " : "") + code_string[_code] + octave_string[_octave];
 		}
 
 		int rawValue()
