@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -24,68 +23,24 @@ namespace MIDI
 		B
 	};
 
-	template <class T>
 	class Note
-	{
-		T _note;
-
-	public:
-		Note(int code, int octave)
-		{
-			_note = T(code, octave);
-		}
-
-		int code()
-		{
-			return _note.code();
-		}
-
-		int octave()
-		{
-			return _note.octave();
-		}
-
-		int change_octave(int to)
-		{
-			return _note.octave = to;
-		}
-
-		int rawValue()
-		{
-			return _note.rawValue();
-		}
-
-		std::string to_string(bool print_type = false)
-		{
-			return _note.to_string();
-		}
-
-		static int safe_octave(int octave)
-		{
-			return T::safe_octave(octave);
-		}
-	};
-
-	class NoteImpl
 	{
 	protected:
 		int _code = 0;
 		int _octave = 0;
 
 	public:
-		NoteImpl()
+		Note()
 		    : _code(0)
 		    , _octave(0)
 		{
 		}
 
-		NoteImpl(int code, int octave)
+		Note(int code, int octave)
 		    : _code(code)
 		    , _octave(octave)
 		{
 		}
-
-		virtual std::string to_string(bool print_type) = 0;
 
 		static int safe_note(int note)
 		{
@@ -102,19 +57,20 @@ namespace MIDI
 			return _octave;
 		}
 
+		virtual std::string to_string(bool print_type = false) = 0;
 		virtual int rawValue() = 0;
 	};
 
-	class International : public NoteImpl
+	class InternationalNote : public Note
 	{
 	public:
-		International()
-		    : NoteImpl(0, 0)
+		InternationalNote()
+		    : Note(0, 0)
 		{
 		}
 
-		International(int code, int octave)
-		    : NoteImpl(code, octave)
+		InternationalNote(int code, int octave)
+		    : Note(code, octave)
 		{
 		}
 
@@ -125,28 +81,28 @@ namespace MIDI
 
 		std::string to_string(bool print_type)
 		{
-			static std::vector<std::string> code_string { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-			static std::vector<std::string> octave_string { "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+			static std::vector<std::string> code_string{ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+			static std::vector<std::string> octave_string{ "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 			return (print_type == true ? "International " : "") + code_string[_code] + octave_string[_octave];
 		}
 
 		int rawValue()
 		{
 			auto c0 = 12;
-			return NoteImpl::safe_note(_code + (International::safe_octave(_octave) * 12) + c0);
+			return Note::safe_note(_code + (InternationalNote::safe_octave(_octave) * 12) + c0);
 		}
 	};
 
-	class Yamaha : public NoteImpl
+	class YamahaNote : public Note
 	{
 	public:
-		Yamaha()
-		    : NoteImpl(0, 0)
+		YamahaNote()
+		    : Note(0, 0)
 		{
 		}
 
-		Yamaha(int code, int octave)
-		    : NoteImpl(code, octave)
+		YamahaNote(int code, int octave)
+		    : Note(code, octave)
 		{
 		}
 
@@ -157,19 +113,16 @@ namespace MIDI
 
 		std::string to_string(bool print_type)
 		{
-			static std::vector<std::string> code_string { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-			static std::vector<std::string> octave_string { "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8" };
+			static std::vector<std::string> code_string{ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+			static std::vector<std::string> octave_string{ "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8" };
 			return (print_type == true ? "Yamaha " : "") + code_string[_code] + octave_string[_octave];
 		}
 
 		int rawValue()
 		{
 			auto c0 = 24;
-			return NoteImpl::safe_note(_code + (Yamaha::safe_octave(_octave) * 12) + c0);
+			return Note::safe_note(_code + (YamahaNote::safe_octave(_octave) * 12) + c0);
 		}
 	};
-
-	using InternationalNote = Note<International>;
-	using YamahaNote = Note<Yamaha>;
 };
 }
